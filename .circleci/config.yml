@@ -34,12 +34,12 @@ workflows:
   deploy-canary:
     jobs:
       - canary10
-      - hold:
+      - approval1:
           type: approval
           requires:
            - canary10
       - canary50
-      - hold:
+      - approval2:
           type: approval
           requires:
            - canary50
