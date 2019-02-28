@@ -38,9 +38,14 @@ workflows:
           type: approval
           requires:
            - canary10
-      - canary50
+      - canary50:
+          requires:
+            - approval1
       - approval2:
           type: approval
           requires:
            - canary50
-      - canary100
+      - canary100:
+          requires:
+            - approval2
+
