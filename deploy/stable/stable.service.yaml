@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stable
+  namespace: canary-demo
+  labels:
+    app: stable
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: stable
+  selector:
+    app: stable

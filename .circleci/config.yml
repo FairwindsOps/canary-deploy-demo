@@ -1,0 +1,46 @@
+version: 2
+
+jobs:
+  canary10:
+    docker:
+      - image: quay.io/reactiveops/ci-images:v7-stretch
+    steps:
+      - checkout
+      - run: prepare-kubectl
+      - run: k8s-deploy-and-verify -f deploy/canary.config
+
+  canary50:
+    docker:
+      - image: quay.io/reactiveops/ci-images:v7-stretch
+    steps:
+      - checkout
+      - run: prepare-kubectl
+      - run: >
+          kubectl patch ingress canary -p '{"metadata":{"annotations":{"nginx.ingress.kubernetes.io/canary-weight": "50"}}}'
+
+  canary100:
+    docker:
+      - image: quay.io/reactiveops/ci-images:v7-stretch
+    steps:
+      - checkout
+      - run: prepare-kubectl
+      - run: k8s-deploy-and-verify -f deploy/stable.config
+      - run: >
+          kubectl patch ingress canary -p '{"metadata":{"annotations":{"nginx.ingress.kubernetes.io/canary-weight": "0"}}}'
+      - run: kubectl scale deployment canary --replicas=0
+
+workflows:
+  version: 2
+  deploy-canary:
+    jobs:
+      - canary10
+      - hold:
+          type: approval
+          requires:
+           - canary10
+      - canary50
+      - hold:
+          type: approval
+          requires:
+           - canary50
+      - canary100

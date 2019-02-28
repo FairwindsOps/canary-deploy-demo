@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: stable
+  namespace: canary-demo
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/stable: "true"
+    nginx.ingress.kubernetes.io/stable-weight: "10"
+spec:
+  rules:
+  - host: canary-demo.robertjscott.ca
+    http:
+      paths:
+      - backend:
+          serviceName: stable
+          servicePort: 80
